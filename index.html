@@ -30,9 +30,20 @@
       --maxw: 920px;
 
       --shadow: 0 10px 22px rgba(0,0,0,0.28);
+
+      /* Motion (smoother + subtle) */
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --ease-soft: cubic-bezier(.22,1,.36,1);
+      --t-fast: 160ms;
+      --t-med: 240ms;
+      --t-slow: 340ms;
     }
 
     *{ box-sizing: border-box; }
+
+    html{
+      scroll-behavior: smooth;
+    }
 
     body{
       margin: 0;
@@ -46,6 +57,9 @@
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     header{
@@ -59,8 +73,11 @@
       gap: 18px;
 
       padding: 14px 22px;
-      background: rgba(11,16,32,0.92);
+      background: rgba(11,16,32,0.78);
       border-bottom: 2px solid var(--border);
+
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .logo{
@@ -69,6 +86,7 @@
       letter-spacing: 0.2px;
       color: var(--text);
       white-space: nowrap;
+      user-select: none;
     }
 
     nav{
@@ -84,14 +102,35 @@
       color: rgba(233,238,248,0.88);
       text-decoration: none;
       font-weight: 650;
-      padding: 6px 8px;
+      padding: 6px 10px;
       border-radius: 10px;
-      transition: background 0.18s ease, color 0.18s ease;
+      transition: background var(--t-med) var(--ease), color var(--t-med) var(--ease);
+      position: relative;
+      outline: none;
+    }
+
+    /* subtle underline animation */
+    nav a::after{
+      content: "";
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 4px;
+      height: 2px;
+      background: rgba(74,121,198,0.70);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform var(--t-med) var(--ease);
+      border-radius: 999px;
+      opacity: 0.9;
     }
 
     nav a:hover{
       background: rgba(255,255,255,0.05);
       color: var(--text);
+    }
+    nav a:hover::after{
+      transform: scaleX(1);
     }
 
     main{
@@ -105,7 +144,7 @@
     h1{
       margin: 0 0 8px;
       text-align: center;
-      font-size: 2rem;
+      font-size: clamp(1.6rem, 2.2vw + 1rem, 2.3rem);
       letter-spacing: 0.2px;
       color: var(--text);
     }
@@ -116,7 +155,7 @@
       text-align: center;
       color: var(--muted);
       line-height: 1.7;
-      font-size: 1.02rem;
+      font-size: clamp(0.98rem, 0.5vw + 0.9rem, 1.08rem);
     }
 
     .rules{
@@ -132,6 +171,28 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
+
+      transition:
+        transform var(--t-slow) var(--ease-soft),
+        border-color var(--t-slow) var(--ease-soft),
+        background var(--t-slow) var(--ease-soft),
+        box-shadow var(--t-slow) var(--ease-soft);
+      will-change: transform;
+    }
+
+    /* subtle hover only on real hover devices */
+    @media (hover: hover) and (pointer: fine){
+      .rule:hover{
+        transform: translateY(-1px);
+        border-color: rgba(74,121,198,0.38);
+        background: rgba(255,255,255,0.065);
+      }
+    }
+
+    .rule.open{
+      border-left-color: var(--accent);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.34);
+      background: rgba(255,255,255,0.07);
     }
 
     .rule__toggle{
@@ -147,17 +208,30 @@
       color: var(--text);
       cursor: pointer;
       text-align: left;
+      outline: none;
+
+      transition: background var(--t-med) var(--ease);
+    }
+
+    @media (hover: hover) and (pointer: fine){
+      .rule__toggle:hover{
+        background: rgba(255,255,255,0.03);
+      }
+    }
+
+    .rule__toggle:active{
+      transform: translateY(1px);
     }
 
     .rule__title{
-      font-size: 1.28rem;
+      font-size: clamp(1.08rem, 0.9vw + 0.95rem, 1.32rem);
       font-weight: 800;
       letter-spacing: 0.2px;
       margin: 0;
     }
 
     .rule__hint{
-      margin: 5px 0 0;
+      margin: 6px 0 0;
       color: var(--muted);
       font-weight: 600;
       font-size: 0.95rem;
@@ -174,8 +248,18 @@
       place-items: center;
       color: rgba(233,238,248,0.86);
       background: rgba(255,255,255,0.04);
-      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      transition:
+        transform var(--t-slow) var(--ease-soft),
+        background var(--t-slow) var(--ease-soft),
+        border-color var(--t-slow) var(--ease-soft);
       user-select: none;
+    }
+
+    @media (hover: hover) and (pointer: fine){
+      .rule__toggle:hover .rule__chev{
+        background: rgba(74,121,198,0.10);
+        border-color: rgba(74,121,198,0.25);
+      }
     }
 
     .rule.open .rule__chev{
@@ -187,9 +271,10 @@
     .rule__panel{
       height: 0;
       overflow: hidden;
-      transition: height 0.24s ease;
+      transition: height var(--t-slow) var(--ease-soft);
       border-top: 1px solid rgba(255,255,255,0.08);
       background: rgba(0,0,0,0.08);
+      will-change: height;
     }
 
     .rule__content{
@@ -197,11 +282,29 @@
       color: rgba(233,238,248,0.92);
       font-size: 1rem;
       line-height: 1.75;
+
+      /* readability */
+      max-width: 78ch;
+
+      /* smooth entrance (prevents "pop") */
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity var(--t-med) var(--ease), transform var(--t-med) var(--ease);
+      will-change: opacity, transform;
+    }
+
+    .rule.open .rule__content{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .rule__content p{
+      margin: 10px 0;
     }
 
     /* Markdown-like blocks */
     .md-quote{
-      margin: 12px 0;
+      margin: 12px 0 14px;
       padding: 10px 12px;
       border-left: 4px solid var(--accent);
       background: rgba(74,121,198,0.10);
@@ -213,7 +316,7 @@
     .md-dash{
       list-style: none;
       padding-left: 0;
-      margin: 12px 0;
+      margin: 12px 0 14px;
       line-height: 1.75;
     }
     .md-dash li{
@@ -259,16 +362,95 @@
       border-top: 2px solid var(--border);
     }
 
+    /* Focus rings (keyboard) */
+    .rule__toggle:focus-visible,
+    nav a:focus-visible{
+      outline: 3px solid rgba(74,121,198,0.75);
+      outline-offset: 3px;
+      border-radius: 12px;
+    }
+    nav a:focus-visible::after{
+      transform: scaleX(1);
+    }
+
+    /* Better mobile + tablet layout */
+    @media (max-width: 900px){
+      main{
+        margin: 28px auto 52px;
+      }
+    }
+
+    @media (max-width: 700px){
+      header{
+        padding: 12px 14px;
+      }
+      nav{
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding-bottom: 2px;
+      }
+      nav::-webkit-scrollbar{
+        height: 8px;
+      }
+      nav::-webkit-scrollbar-thumb{
+        background: rgba(255,255,255,0.10);
+        border-radius: 999px;
+      }
+      nav a{
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+    }
+
     @media (max-width: 600px){
       header{
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
-        padding: 12px 14px;
       }
-      nav{ justify-content: center; }
-      .rule__toggle{ padding: 16px 14px; }
-      .rule__content{ padding: 14px 14px 16px; }
+      .logo{
+        text-align: center;
+      }
+      nav{
+        justify-content: center;
+        overflow-x: auto;
+      }
+      main{
+        margin: 22px auto 44px;
+        padding: 0 14px;
+      }
+      .rule__toggle{
+        padding: 16px 14px;
+        gap: 12px;
+      }
+      .rule__content{
+        padding: 14px 14px 16px;
+        font-size: 0.98rem;
+      }
+      .rule__chev{
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+      }
+    }
+
+    @media (max-width: 420px){
+      .rules{ gap: 12px; }
+      .rule__hint{
+        font-size: 0.92rem;
+      }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+      }
     }
   </style>
 </head>
@@ -863,32 +1045,79 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
       var parsed = parseRules(raw);
       rulesContainer.innerHTML = parsed.map(buildRuleHtml).join("");
 
-      // Accordion behavior
+      // Accordion behavior (improved: height->auto on open, smoother close)
       var ruleEls = Array.prototype.slice.call(document.querySelectorAll(".rule"));
 
-      function setHeight(rule, open){
+      function setHeight(rule, px){
         var panel = rule.querySelector(".rule__panel");
-        var content = rule.querySelector(".rule__content");
-        panel.style.height = open ? (content.scrollHeight + "px") : "0px";
+        panel.style.height = px;
       }
 
-      function setOpen(rule, open){
-        rule.classList.toggle("open", open);
+      function openRule(rule){
+        var panel = rule.querySelector(".rule__panel");
+        var content = rule.querySelector(".rule__content");
         var btn = rule.querySelector(".rule__toggle");
-        btn.setAttribute("aria-expanded", open ? "true" : "false");
-        setHeight(rule, open);
+
+        rule.classList.add("open");
+        btn.setAttribute("aria-expanded", "true");
+
+        // If currently "auto", lock it to px first
+        panel.style.height = "0px";
+        // next frame: animate to scrollHeight
+        requestAnimationFrame(function(){
+          panel.style.height = content.scrollHeight + "px";
+        });
+
+        // After transition, set to auto for responsive content
+        var onEnd = function(e){
+          if (e.propertyName !== "height") return;
+          panel.style.height = "auto";
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
+      }
+
+      function closeRule(rule){
+        var panel = rule.querySelector(".rule__panel");
+        var content = rule.querySelector(".rule__content");
+        var btn = rule.querySelector(".rule__toggle");
+
+        btn.setAttribute("aria-expanded", "false");
+
+        // If height is auto, set current px height so it can animate to 0
+        if (panel.style.height === "" || panel.style.height === "auto") {
+          panel.style.height = content.scrollHeight + "px";
+        }
+
+        // next frame: animate to 0
+        requestAnimationFrame(function(){
+          panel.style.height = "0px";
+          rule.classList.remove("open");
+        });
+      }
+
+      function toggleRule(rule){
+        var isOpen = rule.classList.contains("open");
+        if (isOpen) closeRule(rule);
+        else openRule(rule);
       }
 
       for (var r = 0; r < ruleEls.length; r++) {
         (function(rule){
           var btn = rule.querySelector(".rule__toggle");
           btn.addEventListener("click", function () {
-            var isOpen = rule.classList.contains("open");
-            setOpen(rule, !isOpen);
+            toggleRule(rule);
           });
 
           window.addEventListener("resize", function () {
-            if (rule.classList.contains("open")) setHeight(rule, true);
+            // If open and not auto, keep it accurate
+            var panel = rule.querySelector(".rule__panel");
+            var content = rule.querySelector(".rule__content");
+            if (!rule.classList.contains("open")) return;
+
+            if (panel.style.height !== "auto") {
+              panel.style.height = content.scrollHeight + "px";
+            }
           });
         })(ruleEls[r]);
       }
