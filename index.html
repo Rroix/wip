@@ -17,13 +17,11 @@
       --bg-top: #0b1020;
       --bg-bottom: #0a1324;
       --paper: rgba(255,255,255,0.06);
-      --paper-2: rgba(255,255,255,0.08);
 
       --text: #e9eef8;
       --muted: rgba(233,238,248,0.76);
 
       --accent: #4a79c6;
-      --accent-soft: rgba(74,121,198,0.20);
       --border: rgba(74,121,198,0.30);
 
       --radius: 16px;
@@ -36,23 +34,17 @@
       --ease-soft: cubic-bezier(.22,1,.36,1);
       --t-fast: 160ms;
       --t-med: 240ms;
-      --t-slow: 340ms;
+      --t-slow: 360ms;
     }
 
     *{ box-sizing: border-box; }
 
-    html{
-      scroll-behavior: smooth;
-    }
+    html{ scroll-behavior: smooth; }
 
     body{
       margin: 0;
       font-family: var(--font);
       color: var(--text);
-      background:
-        radial-gradient(900px 520px at 15% 10%, rgba(74,121,198,0.14), transparent 62%),
-        radial-gradient(720px 520px at 80% 25%, rgba(120,170,220,0.10), transparent 60%),
-        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -60,6 +52,33 @@
       text-rendering: optimizeLegibility;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+
+      /* IMPORTANT: background moved to fixed pseudo-element so it never shifts with content height */
+      background: none;
+    }
+
+    /* Fixed gradient background (won’t change with expand/collapse) */
+    body::before{
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      background:
+        radial-gradient(900px 520px at 15% 10%, rgba(74,121,198,0.14), transparent 62%),
+        radial-gradient(720px 520px at 80% 25%, rgba(120,170,220,0.10), transparent 60%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+      transform: translateZ(0);
+    }
+
+    /* Calm particle canvas layer */
+    #bgParticles{
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.9;
+      transform: translateZ(0);
     }
 
     header{
@@ -125,12 +144,12 @@
       opacity: 0.9;
     }
 
-    nav a:hover{
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-    }
-    nav a:hover::after{
-      transform: scaleX(1);
+    @media (hover: hover) and (pointer: fine){
+      nav a:hover{
+        background: rgba(255,255,255,0.05);
+        color: var(--text);
+      }
+      nav a:hover::after{ transform: scaleX(1); }
     }
 
     main{
@@ -209,6 +228,8 @@
       cursor: pointer;
       text-align: left;
       outline: none;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
 
       transition: background var(--t-med) var(--ease);
     }
@@ -238,6 +259,7 @@
       line-height: 1.5;
     }
 
+    /* More fitting chevron */
     .rule__chev{
       flex: 0 0 auto;
       width: 38px;
@@ -246,13 +268,23 @@
       border: 1px solid rgba(255,255,255,0.10);
       display: grid;
       place-items: center;
-      color: rgba(233,238,248,0.86);
       background: rgba(255,255,255,0.04);
       transition:
         transform var(--t-slow) var(--ease-soft),
         background var(--t-slow) var(--ease-soft),
         border-color var(--t-slow) var(--ease-soft);
       user-select: none;
+    }
+
+    .rule__chev svg{
+      width: 18px;
+      height: 18px;
+      display: block;
+      stroke: rgba(233,238,248,0.86);
+      stroke-width: 2.25;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     @media (hover: hover) and (pointer: fine){
@@ -286,7 +318,7 @@
       /* readability */
       max-width: 78ch;
 
-      /* smooth entrance (prevents "pop") */
+      /* smooth entrance */
       opacity: 0;
       transform: translateY(-6px);
       transition: opacity var(--t-med) var(--ease), transform var(--t-med) var(--ease);
@@ -298,9 +330,13 @@
       transform: translateY(0);
     }
 
-    .rule__content p{
-      margin: 10px 0;
+    /* Smooth close (content fades without snapping) */
+    .rule.closing .rule__content{
+      opacity: 0;
+      transform: translateY(-6px);
     }
+
+    .rule__content p{ margin: 10px 0; }
 
     /* Markdown-like blocks */
     .md-quote{
@@ -369,21 +405,15 @@
       outline-offset: 3px;
       border-radius: 12px;
     }
-    nav a:focus-visible::after{
-      transform: scaleX(1);
-    }
+    nav a:focus-visible::after{ transform: scaleX(1); }
 
     /* Better mobile + tablet layout */
     @media (max-width: 900px){
-      main{
-        margin: 28px auto 52px;
-      }
+      main{ margin: 28px auto 52px; }
     }
 
     @media (max-width: 700px){
-      header{
-        padding: 12px 14px;
-      }
+      header{ padding: 12px 14px; }
       nav{
         justify-content: flex-start;
         flex-wrap: nowrap;
@@ -392,9 +422,7 @@
         scrollbar-width: thin;
         padding-bottom: 2px;
       }
-      nav::-webkit-scrollbar{
-        height: 8px;
-      }
+      nav::-webkit-scrollbar{ height: 8px; }
       nav::-webkit-scrollbar-thumb{
         background: rgba(255,255,255,0.10);
         border-radius: 999px;
@@ -411,13 +439,8 @@
         align-items: stretch;
         gap: 10px;
       }
-      .logo{
-        text-align: center;
-      }
-      nav{
-        justify-content: center;
-        overflow-x: auto;
-      }
+      .logo{ text-align: center; }
+      nav{ justify-content: center; overflow-x: auto; }
       main{
         margin: 22px auto 44px;
         padding: 0 14px;
@@ -433,19 +456,21 @@
       .rule__chev{
         width: 36px;
         height: 36px;
-        border-radius: 12px;
+      }
+      .rule__chev svg{
+        width: 17px;
+        height: 17px;
       }
     }
 
     @media (max-width: 420px){
       .rules{ gap: 12px; }
-      .rule__hint{
-        font-size: 0.92rem;
-      }
+      .rule__hint{ font-size: 0.92rem; }
     }
 
-    /* Reduced motion */
+    /* Reduced motion: disables particles + transitions */
     @media (prefers-reduced-motion: reduce){
+      #bgParticles{ display: none !important; }
       *{
         transition: none !important;
         animation: none !important;
@@ -456,6 +481,9 @@
 </head>
 
 <body>
+  <!-- Fixed particle layer -->
+  <canvas id="bgParticles" aria-hidden="true"></canvas>
+
   <header>
     <div class="logo">Geometry Dash Avenue</div>
     <nav>
@@ -480,7 +508,7 @@
   <footer>Geometry Dash Avenue — ©2026</footer>
 
   <!-- =========================================================
-       SECTION 2 — RULES TEXT
+       SECTION 2 — RULES TEXT (UNCHANGED)
        ========================================================= -->
   <script id="rulesText" type="text/plain">
 === Voice Channels and Calls (VC) ===
@@ -831,15 +859,157 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
   </script>
 
   <!-- =========================================================
-       SECTION 1 — LOGIC + DETECTION LOGIC
-       Runs after DOM is ready (fix #1) and reads rulesText safely.
+       SECTION 1 — LOGIC + BACKGROUND (fixed syntax + smoother behavior)
        ========================================================= -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
+      /* ---------------------------
+         Calm particles background
+         --------------------------- */
+      (function initParticles(){
+        var canvas = document.getElementById("bgParticles");
+        if (!canvas || !canvas.getContext) return;
+
+        var reduceMotion = false;
+        try {
+          reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        } catch (e) {}
+
+        if (reduceMotion) return;
+
+        var ctx = canvas.getContext("2d", { alpha: true });
+        var dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        var w = 0, h = 0;
+        var particles = [];
+        var rafId = 0;
+        var lastT = 0;
+        var running = true;
+
+        function rand(min, max){ return min + Math.random() * (max - min); }
+
+        function resize(){
+          var cw = window.innerWidth;
+          var ch = window.innerHeight;
+          w = cw;
+          h = ch;
+
+          canvas.width = Math.floor(cw * dpr);
+          canvas.height = Math.floor(ch * dpr);
+          canvas.style.width = cw + "px";
+          canvas.style.height = ch + "px";
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+          // Adjust count gently with screen size (keeps it light on mobile)
+          var target = Math.round((cw * ch) / 52000);
+          target = Math.max(22, Math.min(60, target));
+
+          // Rebuild only if too far off
+          if (Math.abs(particles.length - target) > 8) {
+            particles = [];
+            for (var i = 0; i < target; i++) particles.push(makeParticle(true));
+          }
+        }
+
+        function makeParticle(spawnAnywhere){
+          var x = spawnAnywhere ? rand(0, w) : rand(0, w);
+          var y = spawnAnywhere ? rand(0, h) : (h + rand(10, 120));
+          var r = rand(0.7, 2.2);
+          var vx = rand(-0.06, 0.06);
+          var vy = rand(-0.14, -0.03); // slow upward drift
+          var a = rand(0.08, 0.22);
+          var tw = rand(0.6, 1.4);     // twinkle speed
+          var ph = rand(0, Math.PI * 2);
+          // blend between cool accent + soft white
+          var mode = Math.random() < 0.45 ? 0 : 1;
+          return { x:x, y:y, r:r, vx:vx, vy:vy, a:a, tw:tw, ph:ph, mode: mode };
+        }
+
+        function draw(t){
+          ctx.clearRect(0, 0, w, h);
+
+          // very subtle vignette for depth
+          ctx.save();
+          ctx.globalAlpha = 0.20;
+          var g = ctx.createRadialGradient(w*0.5, h*0.35, 0, w*0.5, h*0.35, Math.max(w,h)*0.75);
+          g.addColorStop(0, "rgba(0,0,0,0)");
+          g.addColorStop(1, "rgba(0,0,0,0.55)");
+          ctx.fillStyle = g;
+          ctx.fillRect(0,0,w,h);
+          ctx.restore();
+
+          for (var i = 0; i < particles.length; i++){
+            var p = particles[i];
+            var twk = 0.5 + 0.5 * Math.sin(t * 0.001 * p.tw + p.ph);
+            var alpha = p.a * (0.65 + 0.35 * twk);
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+
+            if (p.mode === 0) {
+              ctx.fillStyle = "rgba(74,121,198," + alpha.toFixed(3) + ")";
+            } else {
+              ctx.fillStyle = "rgba(233,238,248," + (alpha * 0.85).toFixed(3) + ")";
+            }
+            ctx.fill();
+          }
+        }
+
+        function step(now){
+          if (!running) return;
+          if (!lastT) lastT = now;
+          var dt = Math.min(0.05, (now - lastT) / 1000);
+          lastT = now;
+
+          for (var i = 0; i < particles.length; i++){
+            var p = particles[i];
+            p.x += p.vx * (60 * dt);
+            p.y += p.vy * (60 * dt);
+
+            // gentle horizontal wrap
+            if (p.x < -20) p.x = w + 20;
+            if (p.x > w + 20) p.x = -20;
+
+            // respawn at bottom once it floats out
+            if (p.y < -40) {
+              particles[i] = makeParticle(false);
+            }
+          }
+
+          draw(now);
+          rafId = requestAnimationFrame(step);
+        }
+
+        function onVis(){
+          if (document.hidden) {
+            running = false;
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = 0;
+          } else {
+            if (!running) {
+              running = true;
+              lastT = 0;
+              rafId = requestAnimationFrame(step);
+            }
+          }
+        }
+
+        window.addEventListener("resize", resize, { passive: true });
+        document.addEventListener("visibilitychange", onVis);
+
+        resize();
+        // Ensure at least some particles exist
+        if (particles.length === 0) {
+          for (var i = 0; i < 36; i++) particles.push(makeParticle(true));
+        }
+        rafId = requestAnimationFrame(step);
+      })();
+
+      /* ---------------------------
+         Rules parsing + accordion
+         --------------------------- */
       var rulesContainer = document.getElementById("rules");
       var rulesTextEl = document.getElementById("rulesText");
 
-      // Fix #1: safe access + run after DOM is ready
       var raw = ((rulesTextEl && rulesTextEl.textContent) ? rulesTextEl.textContent : "")
         .replace(/\r\n/g, "\n")
         .trim();
@@ -866,7 +1036,6 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
       }
 
       function renderInline(text){
-        // escape first
         var t = escapeHtml(text);
 
         // Links: [text](url)
@@ -883,12 +1052,10 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
         return t;
       }
 
-      // === Title === lines
       function isTitleLine(line){
         return /^===\s*.+\s*===\s*$/.test(line.trim());
       }
 
-      // === Title (id) ===
       function parseTitle(line){
         var inside = line.trim().replace(/^===\s*/, "").replace(/\s*===\s*$/, "");
         var m = inside.match(/^(.*?)(?:\s*\(([^)]+)\)\s*)?$/);
@@ -910,17 +1077,14 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
           var id = parsedTitle.id;
           i++;
 
-          // skip empty lines
           while (i < lines.length && lines[i].trim() === "") i++;
 
-          // optional hint line: ~ ...
           var hint = "";
           if (i < lines.length && lines[i].trim().indexOf("~") === 0) {
             hint = lines[i].trim().replace(/^~\s?/, "");
             i++;
           }
 
-          // body until next title
           var body = [];
           while (i < lines.length && !isTitleLine(lines[i])) {
             body.push(lines[i]);
@@ -1033,7 +1197,11 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
           +       '<div class="rule__title">' + escapeHtml(rule.title) + '</div>'
           +       (rule.hint ? '<div class="rule__hint">' + renderInline(rule.hint) + "</div>" : "")
           +     "</div>"
-          +     '<div class="rule__chev" aria-hidden="true">⌄</div>'
+          +     '<div class="rule__chev" aria-hidden="true">'
+          +       '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+          +         '<path d="M6 9l6 6 6-6"></path>'
+          +       '</svg>'
+          +     "</div>"
           +   "</button>"
           +   '<div class="rule__panel" role="region" aria-label="' + escapeHtml(rule.title) + ' details">'
           +     '<div class="rule__content">' + contentHtml + "</div>"
@@ -1041,36 +1209,37 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
           + "</article>";
       }
 
-      // Build rules into container
       var parsed = parseRules(raw);
       rulesContainer.innerHTML = parsed.map(buildRuleHtml).join("");
 
-      // Accordion behavior (improved: height->auto on open, smoother close)
       var ruleEls = Array.prototype.slice.call(document.querySelectorAll(".rule"));
 
-      function setHeight(rule, px){
-        var panel = rule.querySelector(".rule__panel");
-        panel.style.height = px;
+      function getParts(rule){
+        return {
+          panel: rule.querySelector(".rule__panel"),
+          content: rule.querySelector(".rule__content"),
+          btn: rule.querySelector(".rule__toggle")
+        };
       }
 
       function openRule(rule){
-        var panel = rule.querySelector(".rule__panel");
-        var content = rule.querySelector(".rule__content");
-        var btn = rule.querySelector(".rule__toggle");
+        var parts = getParts(rule);
+        var panel = parts.panel, content = parts.content, btn = parts.btn;
 
+        rule.classList.remove("closing");
         rule.classList.add("open");
         btn.setAttribute("aria-expanded", "true");
 
-        // If currently "auto", lock it to px first
+        // lock to 0 then animate to height
         panel.style.height = "0px";
-        // next frame: animate to scrollHeight
         requestAnimationFrame(function(){
           panel.style.height = content.scrollHeight + "px";
         });
 
-        // After transition, set to auto for responsive content
+        // after open transition, set auto for responsiveness
         var onEnd = function(e){
           if (e.propertyName !== "height") return;
+          if (!rule.classList.contains("open")) return;
           panel.style.height = "auto";
           panel.removeEventListener("transitionend", onEnd);
         };
@@ -1078,13 +1247,15 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
       }
 
       function closeRule(rule){
-        var panel = rule.querySelector(".rule__panel");
-        var content = rule.querySelector(".rule__content");
-        var btn = rule.querySelector(".rule__toggle");
+        var parts = getParts(rule);
+        var panel = parts.panel, content = parts.content, btn = parts.btn;
 
+        if (!rule.classList.contains("open")) return;
+
+        rule.classList.add("closing");
         btn.setAttribute("aria-expanded", "false");
 
-        // If height is auto, set current px height so it can animate to 0
+        // If open height is auto, set current px so it can animate to 0
         if (panel.style.height === "" || panel.style.height === "auto") {
           panel.style.height = content.scrollHeight + "px";
         }
@@ -1092,12 +1263,21 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
         // next frame: animate to 0
         requestAnimationFrame(function(){
           panel.style.height = "0px";
-          rule.classList.remove("open");
         });
+
+        var onEnd = function(e){
+          if (e.propertyName !== "height") return;
+
+          // finishing close
+          rule.classList.remove("open");
+          rule.classList.remove("closing");
+          panel.removeEventListener("transitionend", onEnd);
+        };
+        panel.addEventListener("transitionend", onEnd);
       }
 
       function toggleRule(rule){
-        var isOpen = rule.classList.contains("open");
+        var isOpen = rule.classList.contains("open") && !rule.classList.contains("closing");
         if (isOpen) closeRule(rule);
         else openRule(rule);
       }
@@ -1105,20 +1285,18 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
       for (var r = 0; r < ruleEls.length; r++) {
         (function(rule){
           var btn = rule.querySelector(".rule__toggle");
-          btn.addEventListener("click", function () {
+          btn.addEventListener("click", function(){
             toggleRule(rule);
           });
 
-          window.addEventListener("resize", function () {
-            // If open and not auto, keep it accurate
-            var panel = rule.querySelector(".rule__panel");
-            var content = rule.querySelector(".rule__content");
-            if (!rule.classList.contains("open")) return;
-
+          window.addEventListener("resize", function(){
+            if (!rule.classList.contains("open") || rule.classList.contains("closing")) return;
+            var parts = getParts(rule);
+            var panel = parts.panel, content = parts.content;
             if (panel.style.height !== "auto") {
               panel.style.height = content.scrollHeight + "px";
             }
-          });
+          }, { passive: true });
         })(ruleEls[r]);
       }
     });
