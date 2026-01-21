@@ -900,8 +900,8 @@ Trying to dodge consequences (alts, manipulation, deleting messages...) can incr
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
           // Adjust count gently with screen size (keeps it light on mobile)
-          var target = Math.round((cw * ch) / 52000);
-          target = Math.max(22, Math.min(60, target));
+          var target = Math.round((cw * ch) / 36000);
+          target = Math.max(22, Math.min(110, target));
 
           // Rebuild only if too far off
           if (Math.abs(particles.length - target) > 8) {
