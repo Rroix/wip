@@ -2,6 +2,7 @@
   "use strict";
 
   var API_BASE = "https://avenue-guard.onrender.com";
+  var DEFAULT_BOT_AVATAR = "https://cdn.discordapp.com/avatars/1454985687177887866/d268221fd7a7a5529897730d18edd5a0.webp?size=2048";
   var REFRESH_INTERVAL_MS = 30000;
   var REQUEST_TIMEOUT_MS = 12000;
 
@@ -13,6 +14,7 @@
     statusNotice: document.getElementById("statusNotice"),
     version: document.getElementById("versionBadge"),
     uptime: document.getElementById("uptimeValue"),
+    uptimePercent: document.getElementById("uptimePercent"),
     uptimeDetail: document.getElementById("uptimeDetail"),
     latency: document.getElementById("latencyValue"),
     members: document.getElementById("memberValue"),
@@ -40,6 +42,13 @@
     if (hours > 0) return hours + "h " + minutes + "m";
     if (minutes > 0) return minutes + "m";
     return seconds + "s";
+  }
+
+  function formatPercentage(value) {
+    if (value === null || value === undefined || value === "") return "--%";
+    var percentage = Number(value);
+    if (!Number.isFinite(percentage)) return "--%";
+    return Math.max(0, Math.min(100, percentage)).toFixed(2) + "%";
   }
 
   function formatDate(timestamp, includeTime) {
@@ -77,13 +86,17 @@
     setStatusAppearance(state, online);
 
     elements.statusLabel.textContent = String(data.status || (online ? "Operational" : "Unavailable"));
-    elements.version.textContent = String(data.version || "Version unavailable");
+    var version = String(data.version || "Version unavailable");
+    elements.version.textContent = /^\d+\.\d+\.\d+/.test(version)
+      ? "v" + version
+      : version;
     elements.uptime.textContent = formatDuration(
       online ? data.online_uptime_seconds : data.process_uptime_seconds
     );
+    elements.uptimePercent.textContent = formatPercentage(data.uptime_percentage);
     elements.uptimeDetail.textContent = online
       ? "Connected to Discord since " + formatDate(data.online_since_ts, true)
-      : "Render process uptime";
+      : "Render process uptime; Discord is not connected";
     elements.latency.textContent = data.latency_ms !== null
       && data.latency_ms !== undefined
       && Number.isFinite(Number(data.latency_ms))
@@ -95,6 +108,7 @@
 
     var avatarUrl = String(data.avatar_url || "");
     if (/^https:\/\//i.test(avatarUrl)) {
+      elements.avatar.dataset.fallbackStage = "0";
       elements.avatar.src = avatarUrl;
     }
   }
@@ -120,18 +134,18 @@
     var releases = Array.isArray(payload.releases) ? payload.releases : [];
     elements.releaseList.replaceChildren();
     elements.releaseCount.textContent = releases.length === 1
-      ? "1 release"
-      : releases.length + " releases";
+      ? "1 update"
+      : releases.length + " updates";
 
     if (!releases.length) {
       var empty = document.createElement("article");
       empty.className = "release-card surface release-card--empty";
-      appendTextElement(empty, "h3", "release-card__title", "No approved releases yet");
+      appendTextElement(empty, "h3", "release-card__title", "No updates yet");
       appendTextElement(
         empty,
         "p",
         "release-card__summary",
-        "The first version will appear here after its owner approval."
+        "The first published version will appear here."
       );
       elements.releaseList.appendChild(empty);
       return;
@@ -174,7 +188,7 @@
     elements.releaseList.replaceChildren();
     var card = document.createElement("article");
     card.className = "release-card surface release-card--empty";
-    appendTextElement(card, "h3", "release-card__title", "Release history could not be loaded");
+    appendTextElement(card, "h3", "release-card__title", "Update history could not be loaded");
     appendTextElement(
       card,
       "p",
@@ -236,7 +250,12 @@
 
   elements.refresh.addEventListener("click", refresh);
   elements.avatar.addEventListener("error", function () {
-    if (!elements.avatar.src.endsWith("/favicon.ico")) {
+    var fallbackStage = Number(elements.avatar.dataset.fallbackStage || 0);
+    if (elements.avatar.src !== DEFAULT_BOT_AVATAR && fallbackStage < 1) {
+      elements.avatar.dataset.fallbackStage = "1";
+      elements.avatar.src = DEFAULT_BOT_AVATAR;
+    } else if (fallbackStage < 2) {
+      elements.avatar.dataset.fallbackStage = "2";
       elements.avatar.src = "favicon.ico";
     }
   });

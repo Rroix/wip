@@ -913,6 +913,32 @@ a.inline {
   line-height: 1.2;
 }
 
+.metric-card__value-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.metric-card__availability {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 1px;
+  margin-top: 7px;
+  color: #7bdc92;
+  font-size: 0.92rem;
+  font-weight: 750;
+  line-height: 1.15;
+  text-align: right;
+}
+
+.metric-card__availability small {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 600;
+}
+
 .metric-card__value--compact {
   font-size: 1.03rem;
   line-height: 1.4;

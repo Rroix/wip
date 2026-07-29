@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Live status and approved updates for Avenue Guard, the Geometry Dash Avenue utility bot" />
+  <meta name="description" content="Live service information and recent updates for Avenue Guard, the Geometry Dash Avenue utility bot" />
   <meta name="theme-color" content="#0b0b0c" />
   <link rel="icon" href="favicon.ico" />
   <link rel="stylesheet" href="styles.css" />
@@ -27,7 +27,7 @@
         <img
           class="bot-avatar"
           id="botAvatar"
-          src="favicon.ico"
+          src="https://cdn.discordapp.com/avatars/1454985687177887866/d268221fd7a7a5529897730d18edd5a0.webp?size=2048"
           alt="Avenue Guard profile picture"
           width="88"
           height="88"
@@ -36,7 +36,7 @@
           <p class="bot-kicker">GD Avenue utility bot</p>
           <h1 id="bot-title">Avenue Guard</h1>
           <p class="bot-intro">
-            Live service information and owner-approved development updates.
+            Live service information and recent updates.
           </p>
         </div>
       </div>
@@ -59,7 +59,13 @@
     <section class="bot-metrics" aria-label="Avenue Guard service metrics">
       <article class="metric-card surface">
         <p class="metric-card__label">Current uptime</p>
-        <p class="metric-card__value" id="uptimeValue">--</p>
+        <div class="metric-card__value-row">
+          <p class="metric-card__value" id="uptimeValue">--</p>
+          <div class="metric-card__availability" aria-label="Measured uptime percentage">
+            <span id="uptimePercent">--%</span>
+            <small>measured</small>
+          </div>
+        </div>
         <p class="metric-card__detail" id="uptimeDetail">Waiting for service data</p>
       </article>
       <article class="metric-card surface">
@@ -68,9 +74,9 @@
         <p class="metric-card__detail">Gateway response time</p>
       </article>
       <article class="metric-card surface">
-        <p class="metric-card__label">Community served</p>
+        <p class="metric-card__label">GD Avenue members</p>
         <p class="metric-card__value" id="memberValue">--</p>
-        <p class="metric-card__detail">Members in connected servers</p>
+        <p class="metric-card__detail">Current server member count</p>
       </article>
       <article class="metric-card surface">
         <p class="metric-card__label">Last checked</p>
@@ -82,8 +88,8 @@
     <section class="release-section" aria-labelledby="release-title">
       <div class="section-heading">
         <div>
-          <p class="bot-kicker">Development history</p>
-          <h2 id="release-title">Approved updates</h2>
+          <p class="bot-kicker">Version history</p>
+          <h2 id="release-title">Recent updates</h2>
         </div>
         <span class="release-count" id="releaseCount">Loading</span>
       </div>
