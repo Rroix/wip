@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Live status and approved updates for Avenue Guard, the Geometry Dash Avenue utility bot" />
+  <meta name="theme-color" content="#0b0b0c" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Avenue Guard Status</title>
+</head>
+<body>
+  <header>
+    <div class="logo">Geometry Dash Avenue</div>
+    <nav>
+      <a href="index.html">Rules</a>
+      <a href="generator.html">Idea Generator</a>
+      <a href="about.html">About Us</a>
+      <a href="bot.html" class="active">Avenue Guard</a>
+      <a href="https://discord.com/invite/matVTsj">Join Us!</a>
+    </nav>
+  </header>
+
+  <main class="bot-page">
+    <section class="bot-heading" aria-labelledby="bot-title">
+      <div class="bot-identity">
+        <img
+          class="bot-avatar"
+          id="botAvatar"
+          src="favicon.ico"
+          alt="Avenue Guard profile picture"
+          width="88"
+          height="88"
+        />
+        <div>
+          <p class="bot-kicker">GD Avenue utility bot</p>
+          <h1 id="bot-title">Avenue Guard</h1>
+          <p class="bot-intro">
+            Live service information and owner-approved development updates.
+          </p>
+        </div>
+      </div>
+      <button class="status-refresh" id="refreshStatus" type="button">Refresh</button>
+    </section>
+
+    <section class="service-state" aria-labelledby="service-status-title">
+      <div class="service-state__label">
+        <span class="status-dot status-dot--loading" id="statusDot" aria-hidden="true"></span>
+        <div>
+          <p class="service-state__eyebrow" id="service-status-title">Current status</p>
+          <p class="service-state__value" id="statusLabel" aria-live="polite">Checking Avenue Guard</p>
+        </div>
+      </div>
+      <div class="version-badge" id="versionBadge">Version unavailable</div>
+    </section>
+
+    <p class="status-notice" id="statusNotice" role="status" aria-live="polite"></p>
+
+    <section class="bot-metrics" aria-label="Avenue Guard service metrics">
+      <article class="metric-card surface">
+        <p class="metric-card__label">Current uptime</p>
+        <p class="metric-card__value" id="uptimeValue">--</p>
+        <p class="metric-card__detail" id="uptimeDetail">Waiting for service data</p>
+      </article>
+      <article class="metric-card surface">
+        <p class="metric-card__label">Discord latency</p>
+        <p class="metric-card__value" id="latencyValue">--</p>
+        <p class="metric-card__detail">Gateway response time</p>
+      </article>
+      <article class="metric-card surface">
+        <p class="metric-card__label">Community served</p>
+        <p class="metric-card__value" id="memberValue">--</p>
+        <p class="metric-card__detail">Members in connected servers</p>
+      </article>
+      <article class="metric-card surface">
+        <p class="metric-card__label">Last checked</p>
+        <p class="metric-card__value metric-card__value--compact" id="checkedValue">--</p>
+        <p class="metric-card__detail">Automatically refreshes</p>
+      </article>
+    </section>
+
+    <section class="release-section" aria-labelledby="release-title">
+      <div class="section-heading">
+        <div>
+          <p class="bot-kicker">Development history</p>
+          <h2 id="release-title">Approved updates</h2>
+        </div>
+        <span class="release-count" id="releaseCount">Loading</span>
+      </div>
+      <div class="release-list" id="releaseList" aria-live="polite">
+        <article class="release-card surface release-card--loading">
+          <p>Loading release history</p>
+        </article>
+      </div>
+    </section>
+
+    <noscript>
+      <p class="error-box">JavaScript is required to load Avenue Guard's live status.</p>
+    </noscript>
+
+    <div class="divider"></div>
+  </main>
+
+  <footer>
+    <span>Geometry Dash Avenue &mdash; &copy;2026</span>
+    <a href="privacy.html">Privacy Policy</a>
+  </footer>
+
+  <script src="bot.js" defer></script>
+</body>
+</html>
